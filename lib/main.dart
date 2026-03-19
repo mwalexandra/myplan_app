@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:go_router/go_router.dart';
 import 'firebase_options.dart';
+import 'screens/home.dart';
+import 'screens/categorie_list.dart';
+import 'screens/events_list.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,13 +14,32 @@ void main() async {
   runApp(const MyApp());
 }
 
+final GoRouter _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/list',
+      builder: (context, state) => const CategorieListScreen(),
+    ),
+    GoRoute(
+      path: '/detail/:id',
+      builder: (context, state) => EventsListScreen(
+        id: state.pathParameters['id']!,
+      ),
+    ),
+  ],
+);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'MyPlan - Kinder‑Tageskalender',
       theme: ThemeData(
         fontFamily: 'Quicksand',
@@ -44,7 +67,7 @@ class MyApp extends StatelessWidget {
             ),
         ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routerConfig: _router,
     );
   }
 }
