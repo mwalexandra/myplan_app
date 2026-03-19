@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/event.dart';
 import './category_service.dart'; 
 
-class EventRepository {
+class EventService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // All events ordered by date

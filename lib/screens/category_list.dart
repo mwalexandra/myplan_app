@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/models/category.dart';
 import '../../core/services/category_service.dart';
-import '../../core/services/event_service.dart';
+import '../../core/services/event_service.dart';  
 
-class CategoryListScreen extends StatelessWidget {
+class CategoryListScreen extends StatefulWidget {
   const CategoryListScreen({super.key});
 
+  @override
+  State<CategoryListScreen> createState() => _CategoryListScreenState();
+}
+
+class _CategoryListScreenState extends State<CategoryListScreen> {
+  final CategoryService categoryService = CategoryService();
+  final EventService eventService = EventService();  
+
   IconData _getIcon(String iconName) {
-    // Simple mapping of icon names to actual Icons. Not for a real app
     final icons = {
       'school': Icons.school,
       'sports_soccer': Icons.sports_soccer,
@@ -24,13 +31,14 @@ class CategoryListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categoryService = CategoryService();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('MyPlan'),
         actions: [
-          IconButton(icon: const Icon(Icons.account_circle), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {},
+          ),
         ],
       ),
       body: StreamBuilder<List<Category>>(
@@ -47,8 +55,8 @@ class CategoryListScreen extends StatelessWidget {
                 children: [
                   const Text('No categories found.'),
                   ElevatedButton(
-                    onPressed: () => categoryService.addSampleCategories(),
-                    child: const Text('Load Sample Categories'),
+                    onPressed: () => categoryService.ensureDefaultCategories(),  // умный seed
+                    child: const Text('Load Default Categories'),
                   ),
                 ],
               ),
@@ -70,7 +78,7 @@ class CategoryListScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final category = categories[index];
                 return FutureBuilder<int>(
-                  future: EventRepository()
+                  future: eventService
                       .getEventsByCategory(category.name)
                       .first
                       .then((events) => events.length),
@@ -93,8 +101,7 @@ class CategoryListScreen extends StatelessWidget {
                                   color: Colors.white, 
                                   fontSize: 18, 
                                   fontWeight: FontWeight.w600
-                                )
-                            ),
+                                )),
                             Text('$count Events', 
                                 style: const TextStyle(color: Colors.white70)),
                           ],
@@ -109,7 +116,8 @@ class CategoryListScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.go('/add-event'),
+        onPressed: () => context.go('/add-category'), 
+        tooltip: 'Add Category',
         child: const Icon(Icons.add),
       ),
     );

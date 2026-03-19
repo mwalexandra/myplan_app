@@ -38,17 +38,20 @@ class CategoryService {
     await _firestore.collection(collection).doc(categoryName).delete();
   }
 
-  // Sample data
-  Future<void> addSampleCategories() async {
-    final samples = [
-      Category(id: '', name: 'Schule', icon: 'school', color: '0xFF4CAF50'),     // green
-      Category(id: '', name: 'Sport', icon: 'sports_soccer', color: '0xFF2196F3'), // blue
-      Category(id: '', name: 'Freizeit', icon: 'gamepad', color: '0xFFFF9800'),    // orange
-      Category(id: '', name: 'Familie', icon: 'group', color: '0xFFE91E63'),      // pink
-    ];
+  Future<void> ensureDefaultCategories() async {
+    final existing = await _firestore.collection(collection).limit(1).get();
+    
+    if (existing.docs.isEmpty) {  
+      print('Adding default categories...');
+      final defaults = [
+        Category(id: '', name: 'Schule', icon: 'school', color: '0xFF2196F3'),
+        Category(id: '', name: 'Sport', icon: 'sports_soccer', color: '0xFFE91E63'),
+        // Только 2 по твоему запросу
+      ];
 
-    for (var cat in samples) {
-      await _firestore.collection(collection).doc(cat.name).set(cat.toFirestore());
+      for (var cat in defaults) {
+        await _firestore.collection(collection).doc(cat.name).set(cat.toFirestore());
+      }
     }
   }
 }

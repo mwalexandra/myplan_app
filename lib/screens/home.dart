@@ -16,7 +16,7 @@ class HomeScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.displayLarge),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => context.go('/list'),
+              onPressed: () => context.go('/categories'),
               child: const Text('Go to List of Categories'),
             ),
           ],

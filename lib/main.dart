@@ -5,6 +5,7 @@ import 'firebase_options.dart';
 import 'screens/home.dart';
 import 'screens/category_list.dart';
 import 'screens/events_list.dart';
+import 'screens/add_category_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,11 +22,15 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
-      path: '/list',
+      path: '/categories',
       builder: (context, state) => const CategoryListScreen(),
     ),
     GoRoute(
-      path: '/detail/:id',
+      path: '/add-category',
+      builder: (context, state) => const AddCategoryScreen(),  
+    ),
+    GoRoute(
+      path: '/events/:id',
       builder: (context, state) => EventsListScreen(
         id: state.pathParameters['id']!,
       ),
