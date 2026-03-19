@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "515114631032",
+    "project_id": "myplan-eb9ec",
+    "storage_bucket": "myplan-eb9ec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515114631032:android:44856b37237867c9fb128d",
+        "android_client_info": {
+          "package_name": "com.example.myplan_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLGKxDC9I-tKFnZCDsqKw5kul4BqIh6Nc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515114631032:android:a8fe651594bb1b87fb128d",
+        "android_client_info": {
+          "package_name": "myplan.app.mvp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLGKxDC9I-tKFnZCDsqKw5kul4BqIh6Nc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
