@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../models/event.dart';
+import './category_service.dart'; 
 
 class EventRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
