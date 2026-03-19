@@ -42,11 +42,9 @@ class CategoryService {
     final existing = await _firestore.collection(collection).limit(1).get();
     
     if (existing.docs.isEmpty) {  
-      print('Adding default categories...');
       final defaults = [
         Category(id: '', name: 'Schule', icon: 'school', color: '0xFF2196F3'),
         Category(id: '', name: 'Sport', icon: 'sports_soccer', color: '0xFFE91E63'),
-        // Только 2 по твоему запросу
       ];
 
       for (var cat in defaults) {
