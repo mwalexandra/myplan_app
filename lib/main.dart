@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'firebase_options.dart';
 import 'screens/home.dart';
-import 'screens/categorie_list.dart';
+import 'screens/category_list.dart';
 import 'screens/events_list.dart';
 
 void main() async {
@@ -22,7 +22,7 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/list',
-      builder: (context, state) => const CategorieListScreen(),
+      builder: (context, state) => const CategoryListScreen(),
     ),
     GoRoute(
       path: '/detail/:id',
