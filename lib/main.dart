@@ -3,9 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'firebase_options.dart';
 import 'screens/home.dart';
-import 'screens/category_list.dart';
+import 'screens/category_list_screen.dart';
 import 'screens/events_list.dart';
-import 'screens/add_category_screen.dart';
+import 'screens/add_edit_category_screen.dart';
+import 'core/models/category.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,21 +20,18 @@ final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomeScreen(),
-    ),
-    GoRoute(
-      path: '/categories',
       builder: (context, state) => const CategoryListScreen(),
     ),
     GoRoute(
-      path: '/add-category',
-      builder: (context, state) => const AddCategoryScreen(),  
+      path: '/categories/add',
+      builder: (context, state) => const AddEditCategoryScreen(),
     ),
     GoRoute(
-      path: '/events/:id',
-      builder: (context, state) => EventsListScreen(
-        id: state.pathParameters['id']!,
-      ),
+      path: '/categories/edit',
+      builder: (context, state) {
+        final category = state.extra as Category;
+        return AddEditCategoryScreen(category: category);
+      },
     ),
   ],
 );

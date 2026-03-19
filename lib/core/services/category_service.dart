@@ -3,53 +3,74 @@ import '../models/category.dart';
 
 class CategoryService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static const String collection = 'categories';
 
-  // All categories ordered by name
+  CollectionReference<Map<String, dynamic>> get _categories =>
+      _firestore.collection('categories');
+
   Stream<List<Category>> getCategories() {
-    return _firestore
-        .collection(collection)
-        .orderBy('name')
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Category.fromFirestore(doc.data(), doc.id))
-            .toList());
+    return _categories.snapshots().map((snapshot) {
+      final items = snapshot.docs
+          .map((doc) => Category.fromFirestore(doc.data(), doc.id))
+          .toList();
+
+      items.sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+      );
+
+      return items;
+    });
   }
 
-  // By ID
-  Future<Category?> getCategory(String id) async {
-    final doc = await _firestore.collection(collection).doc(id).get();
-    if (doc.exists) {
-      return Category.fromFirestore(doc.data()!, doc.id);
-    }
-    return null;
+  Future<Category?> getCategoryById(String id) async {
+    final doc = await _categories.doc(id).get();
+    if (!doc.exists || doc.data() == null) return null;
+    return Category.fromFirestore(doc.data()!, doc.id);
   }
 
-  // CRUD
   Future<void> createCategory(Category category) async {
-    await _firestore.collection(collection).doc(category.name).set(category.toFirestore());
+    final docRef = _categories.doc();
+    final newCategory = category.copyWith(id: docRef.id);
+
+    await docRef.set(newCategory.toFirestore(isCreate: true));
   }
 
   Future<void> updateCategory(Category category) async {
-    await _firestore.collection(collection).doc(category.name).set(category.toFirestore());
+    await _categories.doc(category.id).update(category.toFirestore());
   }
 
-  Future<void> deleteCategory(String categoryName) async {
-    await _firestore.collection(collection).doc(categoryName).delete();
+  Future<void> deleteCategory(String id) async {
+    await _categories.doc(id).delete();
   }
 
   Future<void> ensureDefaultCategories() async {
-    final existing = await _firestore.collection(collection).limit(1).get();
-    
-    if (existing.docs.isEmpty) {  
-      final defaults = [
-        Category(id: '', name: 'Schule', icon: 'school', color: '0xFF2196F3'),
-        Category(id: '', name: 'Sport', icon: 'sports_soccer', color: '0xFFE91E63'),
-      ];
+    final existing = await _categories.limit(1).get();
+    if (existing.docs.isNotEmpty) return;
 
-      for (var cat in defaults) {
-        await _firestore.collection(collection).doc(cat.name).set(cat.toFirestore());
-      }
-    }
+    final batch = _firestore.batch();
+
+    final sportRef = _categories.doc();
+    final familyRef = _categories.doc();
+
+    final defaults = [
+      Category(
+        id: sportRef.id,
+        name: 'Sport',
+        iconKey: 'sports_soccer',
+        color: '0xFF2196F3',
+        isDefault: true,
+      ),
+      Category(
+        id: familyRef.id,
+        name: 'Familie',
+        iconKey: 'family',
+        color: '0xFFE91E63',
+        isDefault: true,
+      ),
+    ];
+
+    batch.set(sportRef, defaults[0].toFirestore(isCreate: true));
+    batch.set(familyRef, defaults[1].toFirestore(isCreate: true));
+
+    await batch.commit();
   }
 }
