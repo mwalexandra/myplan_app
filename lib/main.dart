@@ -20,7 +20,17 @@ final GoRouter _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/categories',
       builder: (context, state) => const CategoryListScreen(),
+    ),
+    GoRoute(
+      path: '/category/:categoryId',
+      builder: (context, state) => EventsListScreen(
+        id: state.pathParameters['categoryId']!,
+      ),
     ),
     GoRoute(
       path: '/categories/add',
