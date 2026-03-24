@@ -27,9 +27,9 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const CategoryListScreen(),
     ),
     GoRoute(
-      path: '/category/:categoryId',
+      path: '/category/:id',
       builder: (context, state) => EventsListScreen(
-        id: state.pathParameters['categoryId']!,
+        categoryId: state.pathParameters['id']!,
       ),
     ),
     GoRoute(

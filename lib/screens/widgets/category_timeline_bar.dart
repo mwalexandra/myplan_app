@@ -12,8 +12,8 @@ class CategoryTimelineBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const barHeight = 230.0;
-    const hours = ['07.00', '09.00', '11.00', '13.00', '15.00', '17.00', '19.00', '21.00'];
+    const barHeight = 460.0;
+    const hours = ['07.00', '08.00', '09.00', '10.00', '11.00', '12.00', '13.00', '14.00', '15.00', '16.00', '17.00', '18.00', '19.00', '20.00', '21.00'];
 
     return Container(
       padding: const EdgeInsets.all(18),

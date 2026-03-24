@@ -144,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/categories/add'),
         backgroundColor: const Color(0xFF59D66F),
-        child: const Icon(Icons.grid_view_rounded, color: Colors.white),
+        child: const Icon(Icons.add_box, color: Colors.white, semanticLabel: 'Kategorie hinzufügen'),
       ),
     );
   }
