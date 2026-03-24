@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'firebase_options.dart';
-import 'screens/home.dart';
+import 'screens/home/home_screen.dart';
 import 'screens/category_list_screen.dart';
 import 'screens/events_list.dart';
 import 'screens/add_edit_category_screen.dart';
