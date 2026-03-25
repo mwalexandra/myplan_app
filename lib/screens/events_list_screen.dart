@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/models/event.dart';
 import '../../core/services/event_service.dart';
+import './add_edit_category_screen.dart';
 
 class EventsListScreen extends StatelessWidget {
   final String id;
@@ -146,7 +147,7 @@ class EventsListScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // потом откроем AddEditEventScreen
+          context.push('/category/$id/add-event');
         },
         icon: const Icon(Icons.add),
         label: const Text('Neues Ereignis'),

@@ -6,6 +6,7 @@ import 'screens/home/home_screen.dart';
 import 'screens/category_list_screen.dart';
 import 'screens/events_list_screen.dart';
 import 'screens/add_edit_category_screen.dart';
+import 'screens/add_edit_event_screen.dart';
 import 'core/models/category.dart';
 
 void main() async {
@@ -42,6 +43,12 @@ final GoRouter _router = GoRouter(
         final category = state.extra as Category;
         return AddEditCategoryScreen(category: category);
       },
+    ),
+    GoRoute(
+      path: '/category/:id/add-event',
+      builder: (context, state) => AddEditEventScreen(
+        categoryId: state.pathParameters['id']!,
+      ),
     ),
   ],
 );
