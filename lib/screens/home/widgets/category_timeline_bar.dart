@@ -1,19 +1,50 @@
 import 'package:flutter/material.dart';
-import '../../../core/models/category.dart';
-import '../../../core/utils/category_ui_mapper.dart';
+import '../../../../core/models/category.dart';
+import '../../../../core/utils/category_ui_mapper.dart';
+import '../models/timeline_segment.dart';
 
 class CategoryTimelineBar extends StatelessWidget {
   final List<Category> categories;
+  final List<TimelineSegment> segments;
 
   const CategoryTimelineBar({
     super.key,
     required this.categories,
+    required this.segments,
   });
+
+  static const double _barHeight = 230;
+  static const int _startMinute = 7 * 60;
+  static const int _endMinute = 21 * 60;
+
+  double _topForMinutes(int minutes) {
+    final clamped = minutes.clamp(_startMinute, _endMinute);
+    return ((clamped - _startMinute) / (_endMinute - _startMinute)) * _barHeight;
+  }
+
+  double _heightForRange(int startMinutes, int endMinutes) {
+    final top = _topForMinutes(startMinutes);
+    final bottom = _topForMinutes(endMinutes);
+    final raw = bottom - top;
+    return raw < 18 ? 18 : raw;
+  }
 
   @override
   Widget build(BuildContext context) {
-    const barHeight = 460.0;
-    const hours = ['07.00', '08.00', '09.00', '10.00', '11.00', '12.00', '13.00', '14.00', '15.00', '16.00', '17.00', '18.00', '19.00', '20.00', '21.00'];
+    const hours = [
+      '07.00',
+      '09.00',
+      '11.00',
+      '13.00',
+      '15.00',
+      '17.00',
+      '19.00',
+      '21.00',
+    ];
+
+    final now = DateTime.now();
+    final nowMinutes = now.hour * 60 + now.minute;
+    final nowTop = _topForMinutes(nowMinutes);
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -31,7 +62,7 @@ class CategoryTimelineBar extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            height: barHeight,
+            height: _barHeight,
             child: Row(
               children: [
                 SizedBox(
@@ -63,10 +94,26 @@ class CategoryTimelineBar extends StatelessWidget {
                           ),
                         ),
                       ),
-                      ..._buildSegments(categories, barHeight),
+                      ...segments.map((segment) {
+                        return Positioned(
+                          left: 18,
+                          top: _topForMinutes(segment.startMinutes),
+                          child: Container(
+                            width: 28,
+                            height: _heightForRange(
+                              segment.startMinutes,
+                              segment.endMinutes,
+                            ),
+                            decoration: BoxDecoration(
+                              color: CategoryUiMapper.colorFromString(segment.color),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        );
+                      }),
                       Positioned(
                         left: 62,
-                        top: barHeight * 0.43,
+                        top: nowTop,
                         right: 0,
                         child: Row(
                           children: [
@@ -129,30 +176,6 @@ class CategoryTimelineBar extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  List<Widget> _buildSegments(List<Category> categories, double barHeight) {
-    if (categories.isEmpty) return [];
-
-    final count = categories.length;
-    final segmentHeight = (barHeight / (count + 1)).clamp(24.0, 56.0);
-
-    return List.generate(count, (index) {
-      final top = 12 + index * (segmentHeight + 10);
-
-      return Positioned(
-        left: 18,
-        top: top,
-        child: Container(
-          width: 28,
-          height: segmentHeight,
-          decoration: BoxDecoration(
-            color: CategoryUiMapper.colorFromString(categories[index].color),
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
-    });
   }
 }
 
