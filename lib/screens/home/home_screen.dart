@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/models/category.dart';
 import '../../core/services/category_service.dart';
 import '../../core/utils/category_ui_mapper.dart';
-import '../widgets/category_timeline_bar.dart';
+import 'widgets/category_timeline_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   dateText: '${now.day}. ${_monthName(now.month)}',
                 ),
                 const SizedBox(height: 16),
-                CategoryTimelineBar(categories: categories),
+                CategoryTimelineBar(categories: categories, segments: const []),
                 const SizedBox(height: 20),
                 Text(
                   'Kategorien',

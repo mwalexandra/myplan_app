@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'firebase_options.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/category_list_screen.dart';
-import 'screens/events_list.dart';
+import 'screens/events_list_screen.dart';
 import 'screens/add_edit_category_screen.dart';
 import 'core/models/category.dart';
 
@@ -29,7 +29,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/category/:id',
       builder: (context, state) => EventsListScreen(
-        categoryId: state.pathParameters['id']!,
+        id: state.pathParameters['id']!,
       ),
     ),
     GoRoute(
