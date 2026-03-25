@@ -13,9 +13,9 @@ class CategoryTimelineBar extends StatelessWidget {
     required this.segments,
   });
 
-  static const double _barHeight = 230;
+  static const double _barHeight = 460;
   static const int _startMinute = 7 * 60;
-  static const int _endMinute = 21 * 60;
+  static const int _endMinute = 20 * 60;
 
   double _topForMinutes(int minutes) {
     final clamped = minutes.clamp(_startMinute, _endMinute);
@@ -33,13 +33,19 @@ class CategoryTimelineBar extends StatelessWidget {
   Widget build(BuildContext context) {
     const hours = [
       '07.00',
+      '08.00',
       '09.00',
+      '10.00',
       '11.00',
+      '12.00',
       '13.00',
+      '14.00',
       '15.00',
+      '16.00',
       '17.00',
+      '18.00',
       '19.00',
-      '21.00',
+      '20.00',
     ];
 
     final now = DateTime.now();
@@ -67,9 +73,28 @@ class CategoryTimelineBar extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 54,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: hours.map((hour) => Text(hour)).toList(),
+                  height: _barHeight + 12,
+                  child: Stack(
+                    clipBehavior: Clip.hardEdge,
+                    children: hours.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final hourMinutes = (7 + index) * 60;
+                      final topOffset = _topForMinutes(hourMinutes);
+                      
+                      return Positioned(
+                        top: topOffset - 6,
+                        left: 0,
+                        width: 54,
+                        child: SizedBox(
+                          height: 16,
+                          child: Text(
+                            hours[index],
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(width: 12),

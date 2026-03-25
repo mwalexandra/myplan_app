@@ -49,22 +49,6 @@ class EventsListScreen extends StatelessWidget {
 
           final events = snapshot.data ?? [];
 
-          if (events.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Noch keine Ereignisse in dieser Kategorie'),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () => eventService.addSampleEventsForCategory(id),
-                    child: const Text('Testdaten hinzufügen'),
-                  ),
-                ],
-              ),
-            );
-          }
-
           return ListView.builder(
             padding: const EdgeInsets.all(16),
             itemCount: events.length,

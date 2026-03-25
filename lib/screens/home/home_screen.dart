@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/models/category.dart';
+import './models/timeline_segment.dart'; 
 import '../../core/services/category_service.dart';
+import '../../core/services/event_service.dart'; 
 import '../../core/utils/category_ui_mapper.dart';
 import 'widgets/category_timeline_bar.dart';
 
@@ -14,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final CategoryService _categoryService = CategoryService();
+  final EventService _eventService = EventService(); // добавь
 
   @override
   void initState() {
@@ -27,53 +30,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _weekdayName(int weekday) {
     switch (weekday) {
-      case DateTime.monday:
-        return 'Montag';
-      case DateTime.tuesday:
-        return 'Dienstag';
-      case DateTime.wednesday:
-        return 'Mittwoch';
-      case DateTime.thursday:
-        return 'Donnerstag';
-      case DateTime.friday:
-        return 'Freitag';
-      case DateTime.saturday:
-        return 'Samstag';
-      case DateTime.sunday:
-        return 'Sonntag';
-      default:
-        return '';
+      case DateTime.monday: return 'Montag';
+      case DateTime.tuesday: return 'Dienstag';
+      case DateTime.wednesday: return 'Mittwoch';
+      case DateTime.thursday: return 'Donnerstag';
+      case DateTime.friday: return 'Freitag';
+      case DateTime.saturday: return 'Samstag';
+      case DateTime.sunday: return 'Sonntag';
+      default: return '';
     }
   }
 
   String _monthName(int month) {
     switch (month) {
-      case DateTime.january:
-        return 'Januar';
-      case DateTime.february:
-        return 'Februar';
-      case DateTime.march:
-        return 'März';
-      case DateTime.april:
-        return 'April';
-      case DateTime.may:
-        return 'Mai';
-      case DateTime.june:
-        return 'Juni';
-      case DateTime.july:
-        return 'Juli';
-      case DateTime.august:
-        return 'August';
-      case DateTime.september:
-        return 'September';
-      case DateTime.october:
-        return 'Oktober';
-      case DateTime.november:
-        return 'November';
-      case DateTime.december:
-        return 'Dezember';
-      default:
-        return '';
+      case DateTime.january: return 'Januar';
+      case DateTime.february: return 'Februar';
+      case DateTime.march: return 'März';
+      case DateTime.april: return 'April';
+      case DateTime.may: return 'Mai';
+      case DateTime.june: return 'Juni';
+      case DateTime.july: return 'Juli';
+      case DateTime.august: return 'August';
+      case DateTime.september: return 'September';
+      case DateTime.october: return 'Oktober';
+      case DateTime.november: return 'November';
+      case DateTime.december: return 'Dezember';
+      default: return '';
     }
   }
 
@@ -86,57 +68,64 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: StreamBuilder<List<Category>>(
           stream: _categoryService.getCategories(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+          builder: (context, categorySnapshot) {
+            if (categorySnapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Fehler: ${snapshot.error}'),
-              );
+            if (categorySnapshot.hasError) {
+              return Center(child: Text('Fehler: ${categorySnapshot.error}'));
             }
 
-            final categories = snapshot.data ?? [];
+            final categories = categorySnapshot.data ?? [];
 
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-              children: [
-                _HomeHeader(
-                  weekday: _weekdayName(now.weekday),
-                  dateText: '${now.day}. ${_monthName(now.month)}',
-                ),
-                const SizedBox(height: 16),
-                CategoryTimelineBar(categories: categories, segments: const []),
-                const SizedBox(height: 20),
-                Text(
-                  'Kategorien',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 12),
-                if (categories.isEmpty)
-                  const _EmptyCategoriesState()
-                else
-                  GridView.builder(
-                    itemCount: categories.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.95,
+            return StreamBuilder<List<TimelineSegment>>(
+              stream: _eventService.getTimelineSegments(categories), // ← динамические сегменты!
+              builder: (context, segmentsSnapshot) {
+                final segments = segmentsSnapshot.data ?? const [];
+
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                  children: [
+                    _HomeHeader(
+                      weekday: _weekdayName(now.weekday),
+                      dateText: '${now.day}. ${_monthName(now.month)}',
                     ),
-                    itemBuilder: (context, index) {
-                      final category = categories[index];
-                      return _CategoryCard(
-                        category: category,
-                        onTap: () => context.push('/category/${category.id}'),
-                      );
-                    },
-                  ),
-              ],
+                    const SizedBox(height: 16),
+                    CategoryTimelineBar(
+                      categories: categories,
+                      segments: segments, 
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Kategorien',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    if (categories.isEmpty)
+                      const _EmptyCategoriesState()
+                    else
+                      GridView.builder(
+                        itemCount: categories.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.95,
+                        ),
+                        itemBuilder: (context, index) {
+                          final category = categories[index];
+                          return _CategoryCard(
+                            category: category,
+                            onTap: () => context.push('/category/${category.id}'),
+                          );
+                        },
+                      ),
+                  ],
+                );
+              },
             );
           },
         ),
@@ -149,7 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
 class _HomeHeader extends StatelessWidget {
   final String weekday;
   final String dateText;
