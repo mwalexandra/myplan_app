@@ -1,0 +1,27 @@
+name: Deploy Flutter Web to Pages
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:  # Ручной запуск
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'  # Твоя версия Flutter
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'build/web'
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
