@@ -40,29 +40,29 @@ class EventService {
   }
 
   // Add sample data
-  Future<void> addSampleEvents() async {
+  Future<void> addSampleEventsForCategory(String categoryId) async {
     final samples = [
       Event(
         id: '',
-        title: 'Fußballtraining',
-        category: 'Sport',
+        title: 'Beispiel Event 1',
+        category: categoryId,
         date: DateTime.now(),
-        startTime: const TimeOfDay(hour: 16, minute: 30),
-        endTime: const TimeOfDay(hour: 17, minute: 30), 
-        description: 'Fußballtraining mit dem Verein',
+        startTime: const TimeOfDay(hour: 9, minute: 0),
+        endTime: const TimeOfDay(hour: 10, minute: 0),
+        description: 'Erstes Beispielereignis',
       ),
       Event(
         id: '',
-        title: 'Mathe',
-        category: 'Schule',
+        title: 'Beispiel Event 2',
+        category: categoryId,
         date: DateTime.now(),
-        startTime: const TimeOfDay(hour: 8, minute: 0),
-        endTime: const TimeOfDay(hour: 9, minute: 0),
-        description: 'Matheunterricht in der Schule',
+        startTime: const TimeOfDay(hour: 11, minute: 0),
+        endTime: const TimeOfDay(hour: 12, minute: 0),
+        description: 'Zweites Beispielereignis',
       ),
     ];
 
-    for (var event in samples) {
+    for (final event in samples) {
       await _firestore.collection('events').add(event.toFirestore());
     }
   }

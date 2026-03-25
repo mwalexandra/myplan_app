@@ -103,11 +103,11 @@ class EventsListScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            event.startTime,
+                            event.startTimeLabel,
                             style: const TextStyle(fontSize: 16),
                           ),
                           Text(
-                            event.endTime,
+                            event.endTimeLabel,
                             style: const TextStyle(fontSize: 16),
                           ),
                         ],

@@ -8,13 +8,13 @@ class Event {
   final DateTime date;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
-  final bool isRepeating;
+  final bool isRepeating; // пока только да/нет, без статуса
 
   Event({
     required this.id,
     required this.title,
     required this.description,
-    required this.date, 
+    required this.date,
     required this.category,
     required this.startTime,
     required this.endTime,
@@ -28,14 +28,8 @@ class Event {
       description: data['description'] as String,
       date: DateTime.parse(data['date'] as String),
       category: data['category'] as String,
-      startTime: TimeOfDay(
-        hour: int.parse((data['startTime'] as String).split(':')[0]),
-        minute: int.parse((data['startTime'] as String).split(':')[1]),
-      ),
-      endTime: TimeOfDay(
-        hour: int.parse((data['endTime'] as String).split(':')[0]),
-        minute: int.parse((data['endTime'] as String).split(':')[1]),
-      ),
+      startTime: Event.parseTimeOfDay(data['startTime'] as String),
+      endTime: Event.parseTimeOfDay(data['endTime'] as String),
       isRepeating: data['isRepeating'] as bool? ?? false,
     );
   }
@@ -59,4 +53,17 @@ class Event {
       minute: int.parse(parts[1]),
     );
   }
+
+  // Удобная строка для показа времени, например "08:05"
+  String get startTimeLabel =>
+      '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+
+  String get endTimeLabel =>
+      '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}';
+
+  // Временно: повторяется/нет
+  String get repeatLabel => isRepeating ? 'Wiederholt' : 'Einmalig';
+
+  // Пока статуса нет – можно зашить, потом заменим на поле в модели
+  String get status => 'Offen';
 }
