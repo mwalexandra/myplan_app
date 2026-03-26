@@ -168,6 +168,7 @@ class _HomeHeader extends StatelessWidget {
             text: const TextSpan(
               style: TextStyle(
                 fontFamily: 'Chewy',
+                fontWeight: FontWeight.w800,
                 fontSize: 42,
                 height: 1,
               ),
