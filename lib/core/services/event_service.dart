@@ -62,7 +62,7 @@ class EventService {
   }
 
   Stream<List<TimelineSegment>> getTimelineSegments(List<Category> categories) {
-    // Берём события на сегодня
+    // Für jeden Kategorie die Events des heutigen Tages abrufen und daraus TimelineSegments erstellen
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));

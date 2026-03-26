@@ -169,7 +169,7 @@ class _HomeHeader extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Chewy',
                 fontWeight: FontWeight.w800,
-                fontSize: 42,
+                fontSize: 36,
                 height: 1,
               ),
               children: [
@@ -186,7 +186,7 @@ class _HomeHeader extends StatelessWidget {
           ),
           const Spacer(),
           Column(                                          // Datum
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 weekday,
@@ -198,6 +198,12 @@ class _HomeHeader extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
+          ),
+          const Spacer(),
+          const Icon(
+            Icons.menu_open,
+            size: 42,
+            color: Color(0xFF34C759),
           ),
         ],
       ),

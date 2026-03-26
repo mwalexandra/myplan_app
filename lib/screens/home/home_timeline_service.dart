@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:myplan_app/core/models/category.dart';
 import 'package:myplan_app/screens/home/models/timeline_segment.dart';
-import '../../core/services/event_service.dart';
 
 class HomeTimelineService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
