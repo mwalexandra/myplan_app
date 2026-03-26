@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final CategoryService _categoryService = CategoryService();
-  final EventService _eventService = EventService(); // добавь
+  final EventService _eventService = EventService(); 
 
   @override
   void initState() {
@@ -164,25 +164,28 @@ class _HomeHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF34C759), Color(0xFF3498DB)],
-              ),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Text(
-              'MyPlan',
+          RichText(
+            text: const TextSpan(
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 26,
-                fontWeight: FontWeight.w700,
+                fontSize: 48,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.2,
+                height: 1,
               ),
+              children: [
+                TextSpan(
+                  text: 'My',
+                  style: TextStyle(color: Color(0xFF34C759)),
+                ),
+                TextSpan(
+                  text: 'Plan',
+                  style: TextStyle(color: Color(0xFF3498DB)),
+                ),
+              ],
             ),
           ),
           const Spacer(),
-          Column(
+          Column(                                          // Datum
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
@@ -195,16 +198,6 @@ class _HomeHeader extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ],
-          ),
-          const SizedBox(width: 12),
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F3F8),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.dark_mode_outlined),
           ),
         ],
       ),
