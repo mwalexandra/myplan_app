@@ -167,9 +167,8 @@ class _HomeHeader extends StatelessWidget {
           RichText(
             text: const TextSpan(
               style: TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.2,
+                fontFamily: 'Chewy',
+                fontSize: 42,
                 height: 1,
               ),
               children: [
