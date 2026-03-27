@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/models/category.dart';
-import './models/timeline_segment.dart'; 
+import './models/timeline_segment.dart';
 import '../../core/services/category_service.dart';
-import '../../core/services/event_service.dart'; 
 import '../../core/utils/category_ui_mapper.dart';
 import 'widgets/category_timeline_bar.dart';
+import 'home_timeline_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,16 +16,42 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final CategoryService _categoryService = CategoryService();
-  final EventService _eventService = EventService(); 
+  final HomeTimelineService _homeTimelineService = HomeTimelineService();
+
+  late final Stream<List<Category>> _categoriesStream;
+  Stream<List<TimelineSegment>>? _segmentsStream;
+  String _segmentsSignature = '';
 
   @override
   void initState() {
     super.initState();
+    _categoriesStream = _categoryService.getCategories();
     _seedDefaults();
   }
 
   Future<void> _seedDefaults() async {
     await _categoryService.ensureDefaultCategories();
+  }
+
+  Stream<List<TimelineSegment>> _resolveSegmentsStream(List<Category> categories) {
+    if (categories.isEmpty) {
+      _segmentsSignature = '';
+      _segmentsStream = Stream.value(const <TimelineSegment>[]);
+      return _segmentsStream!;
+    }
+
+    final sorted = [...categories]..sort((a, b) => a.id.compareTo(b.id));
+    final nextSignature = sorted
+        .map((c) => '${c.id}:${c.name}:${c.color}')
+        .join('|');
+
+    if (_segmentsStream != null && _segmentsSignature == nextSignature) {
+      return _segmentsStream!;
+    }
+
+    _segmentsSignature = nextSignature;
+    _segmentsStream = _homeTimelineService.watchTodaySegments(categories);
+    return _segmentsStream!;
   }
 
   String _weekdayName(int weekday) {
@@ -67,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFF7F8FC),
       body: SafeArea(
         child: StreamBuilder<List<Category>>(
-          stream: _categoryService.getCategories(),
+          stream: _categoriesStream,
           builder: (context, categorySnapshot) {
             if (categorySnapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -77,12 +103,13 @@ class _HomeScreenState extends State<HomeScreen> {
               return Center(child: Text('Fehler: ${categorySnapshot.error}'));
             }
 
-            final categories = categorySnapshot.data ?? [];
+            final categories = categorySnapshot.data ?? const <Category>[];
+            final segmentsStream = _resolveSegmentsStream(categories);
 
             return StreamBuilder<List<TimelineSegment>>(
-              stream: _eventService.getTimelineSegments(categories), // ← динамические сегменты!
+              stream: segmentsStream,
               builder: (context, segmentsSnapshot) {
-                final segments = segmentsSnapshot.data ?? const [];
+                final segments = segmentsSnapshot.data ?? const <TimelineSegment>[];
 
                 return ListView(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -94,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 16),
                     CategoryTimelineBar(
                       categories: categories,
-                      segments: segments, 
+                      segments: segments,
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -138,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
 class _HomeHeader extends StatelessWidget {
   final String weekday;
   final String dateText;
