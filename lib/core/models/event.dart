@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Event {
@@ -8,7 +9,7 @@ class Event {
   final DateTime date;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
-  final bool isRepeating; // пока только да/нет, без статуса
+  final bool isRepeating;
 
   Event({
     required this.id,
@@ -22,48 +23,63 @@ class Event {
   });
 
   factory Event.fromFirestore(Map<String, dynamic> data, String id) {
+    final rawDate = data['date'];
+
+    DateTime parsedDate;
+    if (rawDate is Timestamp) {
+      parsedDate = rawDate.toDate();
+    } else if (rawDate is DateTime) {
+      parsedDate = rawDate;
+    } else if (rawDate is String) {
+      parsedDate = DateTime.parse(rawDate);
+    } else {
+      parsedDate = DateTime.now();
+    }
+
     return Event(
       id: id,
-      title: data['title'] as String,
-      description: data['description'] as String,
-      date: DateTime.parse(data['date'] as String),
-      category: data['category'] as String,
-      startTime: Event.parseTimeOfDay(data['startTime'] as String),
-      endTime: Event.parseTimeOfDay(data['endTime'] as String),
+      title: (data['title'] as String? ?? '').trim(),
+      description: (data['description'] as String? ?? '').trim(),
+      date: DateTime(parsedDate.year, parsedDate.month, parsedDate.day),
+      category: (data['category'] as String? ?? data['categoryId'] as String? ?? '').trim(),
+      startTime: Event.parseTimeOfDay(data['startTime'] as String? ?? '09:00'),
+      endTime: Event.parseTimeOfDay(data['endTime'] as String? ?? '10:00'),
       isRepeating: data['isRepeating'] as bool? ?? false,
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      'title': title,
-      'description': description,
-      'date': date.toIso8601String(),
+      'title': title.trim(),
+      'description': description.trim(),
+      'date': Timestamp.fromDate(DateTime(date.year, date.month, date.day)),
       'category': category,
-      'startTime': '${startTime.hour}:${startTime.minute}',
-      'endTime': '${endTime.hour}:${endTime.minute}',
+      'categoryId': category,
+      'startTime': formatTimeOfDay(startTime),
+      'endTime': formatTimeOfDay(endTime),
       'isRepeating': isRepeating,
     };
   }
 
   static TimeOfDay parseTimeOfDay(String time) {
     final parts = time.split(':');
-    return TimeOfDay(
-      hour: int.parse(parts[0]),
-      minute: int.parse(parts[1]),
-    );
+    final hour = int.tryParse(parts[0]) ?? 0;
+    final minute = int.tryParse(parts[1]) ?? 0;
+
+    return TimeOfDay(hour: hour, minute: minute);
   }
 
-  // Удобная строка для показа времени, например "08:05"
-  String get startTimeLabel =>
-      '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+  static String formatTimeOfDay(TimeOfDay time) {
+    final hh = time.hour.toString().padLeft(2, '0');
+    final mm = time.minute.toString().padLeft(2, '0');
+    return '$hh:$mm';
+  }
 
-  String get endTimeLabel =>
-      '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}';
+  String get startTimeLabel => formatTimeOfDay(startTime);
 
-  // Временно: повторяется/нет
+  String get endTimeLabel => formatTimeOfDay(endTime);
+
   String get repeatLabel => isRepeating ? 'Wiederholt' : 'Einmalig';
 
-  // Пока статуса нет – можно зашить, потом заменим на поле в модели
   String get status => 'Offen';
 }
