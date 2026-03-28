@@ -82,6 +82,101 @@ class _HomeScreenState extends State<HomeScreen> {
     return _segmentsStream!;
   }
 
+  void _showCategoryPicker(List<Category> categories) {
+    if (categories.isEmpty) return;
+
+    final sorted = [...categories]..sort((a, b) => a.name.compareTo(b.name));
+
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFFF7F8FC),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kategorie wählen',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Wähle eine Kategorie für das neue Ereignis.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 420),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: sorted.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final category = sorted[index];
+                      final color = CategoryUiMapper.colorFromString(category.color);
+                      final icon = CategoryUiMapper.iconFromKey(category.iconKey);
+
+                      return Material(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(18),
+                          onTap: () {
+                            Navigator.of(sheetContext).pop();
+                            context.push('/category/${category.id}/add-event');
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 14,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: color.withOpacity(0.14),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    icon,
+                                    color: color,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    category.name,
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ),
+                                const Icon(Icons.chevron_right),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+  
   String _weekdayName(int weekday) {
     switch (weekday) {
       case DateTime.monday:
@@ -247,14 +342,21 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/events/add'),
-        backgroundColor: const Color(0xFF59D66F),
-        child: const Icon(
-          Icons.add_box,
-          color: Colors.white,
-          semanticLabel: 'Neues Ereignis',
-        ),
+      floatingActionButton: StreamBuilder<List<Category>>(
+        stream: _categoriesStream,
+        builder: (context, snapshot) {
+          final categories = snapshot.data ?? const <Category>[];
+
+          return FloatingActionButton.extended(
+            onPressed: categories.isEmpty
+                ? null
+                : () => _showCategoryPicker(categories),
+            backgroundColor: const Color(0xFF59D66F),
+            foregroundColor: Colors.white,
+            icon: const Icon(Icons.add),
+            label: const Text('Neues Ereignis'),
+          );
+        },
       ),
     );
   }
