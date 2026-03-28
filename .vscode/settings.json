@@ -1,3 +1,5 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "dart.flutterSdkPath": "C:\\dev\\flutter",
+    "cmake.sourceDirectory": "C:/Users/manik/flutter_projects/myplan-app/myplan_app/windows/flutter"
 }
