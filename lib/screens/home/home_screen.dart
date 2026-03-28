@@ -196,9 +196,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           segments: segments,
                         ),
                         const SizedBox(height: 20),
-                        Text(
-                          'Mein Plan heute',
-                          style: Theme.of(context).textTheme.titleLarge,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Mein Plan heute',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () => context.push('/categories'),
+                              child: const Text('Alle Kategorien'),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         if (todayCategoriesSnapshot.connectionState ==
@@ -238,12 +248,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/categories/add'),
+        onPressed: () => context.push('/events/add'),
         backgroundColor: const Color(0xFF59D66F),
         child: const Icon(
           Icons.add_box,
           color: Colors.white,
-          semanticLabel: 'Kategorie hinzufügen',
+          semanticLabel: 'Neues Ereignis',
         ),
       ),
     );
