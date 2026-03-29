@@ -1,0 +1,12 @@
+{
+  "name": "myplan_app_tools",
+  "private": true,
+  "scripts": {
+    "web": "flutter run -d chrome",
+    "android": "flutter run -d emulator-5554",
+    "build": "flutter build web",
+    "deploy": "firebase deploy --only hosting",
+    "redeploy": "flutter build web && firebase deploy --only hosting",
+    "devices": "flutter devices"
+  }
+}
