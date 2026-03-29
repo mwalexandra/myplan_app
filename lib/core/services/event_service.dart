@@ -13,13 +13,23 @@ class EventService {
         .collection('categories')
         .doc(categoryId)
         .collection('events')
-        .orderBy('date')
         .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => Event.fromFirestore(doc.data(), doc.id))
-              .toList(),
-        );
+        .map((snapshot) {
+      final events = snapshot.docs
+          .map((doc) => Event.fromFirestore(doc.data(), doc.id))
+          .toList();
+
+      events.sort((a, b) {
+        final dateCompare = a.date.compareTo(b.date);
+        if (dateCompare != 0) return dateCompare;
+
+        final aStart = a.startTime.hour * 60 + a.startTime.minute;
+        final bStart = b.startTime.hour * 60 + b.startTime.minute;
+        return aStart.compareTo(bStart);
+      });
+
+      return events;
+    });
   }
 
   Stream<List<Event>> getTodayEventsByCategory(String categoryId) {
