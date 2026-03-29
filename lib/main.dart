@@ -29,9 +29,14 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
       path: '/category/:id',
-      builder: (context, state) => EventsListScreen(
-        id: state.pathParameters['id']!,
-      ),
+      builder: (context, state) { 
+        final mode = state.uri.queryParameters['mode'] ?? 'upcoming';
+
+        return EventsListScreen(
+          id: state.pathParameters['id']!,
+          mode: mode,
+        );
+      },
     ),
     GoRoute(
       path: '/categories/add',

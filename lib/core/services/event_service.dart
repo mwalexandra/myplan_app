@@ -9,6 +9,10 @@ class EventService {
   }
 
   Stream<List<Event>> getTodayEventsByCategory(String categoryId) {
+    final now = DateTime.now();
+    final startOfToday = DateTime(now.year, now.month, now.day);
+    final endOfToday = startOfToday.add(const Duration(days: 1));
+
     return _firestore
         .collection('categories')
         .doc(categoryId)
@@ -17,6 +21,47 @@ class EventService {
         .map((snapshot) {
       final events = snapshot.docs
           .map((doc) => Event.fromFirestore(doc.data(), doc.id))
+          .where((event) {
+            final eventDate = DateTime(
+              event.date.year,
+              event.date.month,
+              event.date.day,
+            );
+            return !eventDate.isBefore(startOfToday) &&
+                eventDate.isBefore(endOfToday);
+          })
+          .toList();
+
+      events.sort((a, b) {
+        final aStart = a.startTime.hour * 60 + a.startTime.minute;
+        final bStart = b.startTime.hour * 60 + b.startTime.minute;
+        return aStart.compareTo(bStart);
+      });
+
+      return events;
+    });
+  }
+
+  Stream<List<Event>> getUpcomingEventsByCategory(String categoryId) {
+    final now = DateTime.now();
+    final startOfToday = DateTime(now.year, now.month, now.day);
+
+    return _firestore
+        .collection('categories')
+        .doc(categoryId)
+        .collection('events')
+        .snapshots()
+        .map((snapshot) {
+      final events = snapshot.docs
+          .map((doc) => Event.fromFirestore(doc.data(), doc.id))
+          .where((event) {
+            final eventDate = DateTime(
+              event.date.year,
+              event.date.month,
+              event.date.day,
+            );
+            return !eventDate.isBefore(startOfToday);
+          })
           .toList();
 
       events.sort((a, b) {

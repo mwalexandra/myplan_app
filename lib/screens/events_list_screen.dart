@@ -6,13 +6,14 @@ import '../../core/models/category.dart';
 import '../../core/services/event_service.dart';
 import '../../core/services/category_service.dart';
 
-enum EventsListMode { today, upcoming }
 class EventsListScreen extends StatefulWidget {
   final String id;
+  final String mode;
 
   const EventsListScreen({
     super.key,
     required this.id,
+    required this.mode,
   });
 
   @override
@@ -34,7 +35,8 @@ class _EventsListScreenState extends State<EventsListScreen> {
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
-    return '$day.$month.';
+    final year = date.year.toString();
+    return '$day.$month.$year';
   }
 
   IconData _statusIcon(String status) {
@@ -43,19 +45,46 @@ class _EventsListScreenState extends State<EventsListScreen> {
   }
 
   Color _colorFromHex(String value) {
-    final hex = value
-      .toUpperCase()
-      .replaceAll('#', '')
-      .replaceAll('0X', '');
+    final hex = value.toUpperCase().replaceAll('#', '').replaceAll('0X', '');
+    final normalized = hex.length == 6 ? 'FF$hex' : hex;
+    return Color(int.parse(normalized, radix: 16));
+  }
 
-    return Color(int.parse(hex, radix: 16));
+  String get _screenTitle {
+    switch (widget.mode) {
+      case 'today':
+        return 'Heutige Ereignisse';
+      case 'upcoming':
+      default:
+        return 'Kommende Ereignisse';
+    }
+  }
+
+  Stream<List<Event>> _eventsStream() {
+    switch (widget.mode) {
+      case 'today':
+        return _eventService.getTodayEventsByCategory(widget.id);
+      case 'upcoming':
+      default:
+        return _eventService.getUpcomingEventsByCategory(widget.id);
+    }
+  }
+
+  String get _emptyText {
+    switch (widget.mode) {
+      case 'today':
+        return 'Für heute gibt es keine Ereignisse.';
+      case 'upcoming':
+      default:
+        return 'Keine kommenden Ereignisse vorhanden.';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ereignisse'),
+        title: Text(_screenTitle),
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: const Icon(Icons.arrow_back),
@@ -78,7 +107,7 @@ class _EventsListScreenState extends State<EventsListScreen> {
           final avatarColor = _colorFromHex(category?.color ?? '#2196F3');
 
           return StreamBuilder<List<Event>>(
-            stream: _eventService.getTodayEventsByCategory(widget.id),
+            stream: _eventsStream(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -93,8 +122,8 @@ class _EventsListScreenState extends State<EventsListScreen> {
               final events = snapshot.data ?? [];
 
               if (events.isEmpty) {
-                return const Center(
-                  child: Text('Noch keine Ereignisse vorhanden.'),
+                return Center(
+                  child: Text(_emptyText),
                 );
               }
 
@@ -126,7 +155,7 @@ class _EventsListScreenState extends State<EventsListScreen> {
                         ),
                         const SizedBox(width: 14),
                         SizedBox(
-                          width: 62,
+                          width: 86,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

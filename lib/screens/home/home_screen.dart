@@ -329,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               return _CategoryCard(
                                 category: category,
                                 onTap: () =>
-                                    context.push('/category/${category.id}'),
+                                    context.push('/category/${category.id}?mode=today'),
                               );
                             },
                           ),

@@ -29,16 +29,16 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete category'),
-          content: Text('Delete "${category.name}"?'),
+          title: const Text('Löschen bestätigen'),
+          content: Text('Möchten Sie "${category.name}" löschen?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
+              child: const Text('Abbrechen'),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete'),
+              child: const Text('Löschen'),
             ),
           ],
         );
@@ -73,7 +73,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text('Error: ${snapshot.error}'),
+              child: Text('Fehler: ${snapshot.error}'),
             );
           }
 
@@ -81,7 +81,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
 
           if (categories.isEmpty) {
             return const Center(
-              child: Text('No categories yet'),
+              child: Text('Keine Kategorien gefunden.'),
             );
           }
 
@@ -106,7 +106,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                   elevation: 4,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(24),
-                    onTap: () => _openEditCategory(category),
+                    onTap: () => context.push('/category/${category.id}?mode=upcoming'),
                     child: Stack(
                       children: [
                         Positioned(
@@ -128,11 +128,11 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                             itemBuilder: (context) => const [
                               PopupMenuItem(
                                 value: 'edit',
-                                child: Text('Edit'),
+                                child: Text('Bearbeiten'),
                               ),
                               PopupMenuItem(
                                 value: 'delete',
-                                child: Text('Delete'),
+                                child: Text('Löschen'),
                               ),
                             ],
                           ),
@@ -157,7 +157,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                category.isDefault ? 'Default category' : 'Custom category',
+                                category.isDefault ? 'Standard Kategorie' : ' Benutzerdefinierte Kategorie',
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -178,7 +178,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddCategory,
         icon: const Icon(Icons.add),
-        label: const Text('Add category'),
+        label: const Text('Kategorie hinzufügen'),
       ),
     );
   }
