@@ -9,4 +9,4 @@
     "redeploy": "flutter build web && firebase deploy --only hosting",
     "devices": "flutter devices"
   }
-}
+} 
