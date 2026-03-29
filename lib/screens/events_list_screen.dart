@@ -63,7 +63,18 @@ class _EventsListScreenState extends State<EventsListScreen> {
       body: FutureBuilder<Category?>(
         future: _categoryFuture,
         builder: (context, categorySnapshot) {
-          final avatarColor = _colorFromHex(categorySnapshot.data?.color ?? '#2196F3');
+          if (categorySnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (categorySnapshot.hasError) {
+            return Center(
+              child: Text('Fehler: ${categorySnapshot.error}'),
+            );
+          }
+
+          final category = categorySnapshot.data;
+          final avatarColor = _colorFromHex(category?.color ?? '#2196F3');
 
           return StreamBuilder<List<Event>>(
             stream: _eventService.getEventsByCategory(widget.id),
@@ -79,6 +90,12 @@ class _EventsListScreenState extends State<EventsListScreen> {
               }
 
               final events = snapshot.data ?? [];
+
+              if (events.isEmpty) {
+                return const Center(
+                  child: Text('Noch keine Ereignisse vorhanden.'),
+                );
+              }
 
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
