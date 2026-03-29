@@ -8,7 +8,7 @@ class EventService {
     return const Stream.empty();
   }
 
-  Stream<List<Event>> getEventsByCategory(String categoryId) {
+  Stream<List<Event>> getTodayEventsByCategory(String categoryId) {
     return _firestore
         .collection('categories')
         .doc(categoryId)
@@ -30,26 +30,6 @@ class EventService {
 
       return events;
     });
-  }
-
-  Stream<List<Event>> getTodayEventsByCategory(String categoryId) {
-    final now = DateTime.now();
-    final startOfDay = DateTime(now.year, now.month, now.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
-    return _firestore
-        .collection('categories')
-        .doc(categoryId)
-        .collection('events')
-        .where('date', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
-        .where('date', isLessThan: Timestamp.fromDate(endOfDay))
-        .orderBy('date')
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => Event.fromFirestore(doc.data(), doc.id))
-              .toList(),
-        );
   }
 
   Future<String> createEvent(String categoryId, Event event) async {

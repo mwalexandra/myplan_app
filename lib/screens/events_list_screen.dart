@@ -6,6 +6,7 @@ import '../../core/models/category.dart';
 import '../../core/services/event_service.dart';
 import '../../core/services/category_service.dart';
 
+enum EventsListMode { today, upcoming }
 class EventsListScreen extends StatefulWidget {
   final String id;
 
@@ -77,7 +78,7 @@ class _EventsListScreenState extends State<EventsListScreen> {
           final avatarColor = _colorFromHex(category?.color ?? '#2196F3');
 
           return StreamBuilder<List<Event>>(
-            stream: _eventService.getEventsByCategory(widget.id),
+            stream: _eventService.getTodayEventsByCategory(widget.id),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
